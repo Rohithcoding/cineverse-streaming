@@ -5,6 +5,9 @@ import { useSearchParams } from "next/navigation";
 import SearchResults from "@/components/SearchResults";
 import { Search } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
