@@ -1,0 +1,50 @@
+/* Ad Blocking CSS - Hides common ad elements */
+
+/* Hide common ad containers */
+iframe[src*="doubleclick"],
+iframe[src*="googlesyndication"],
+iframe[src*="advertising"],
+iframe[src*="ads"],
+iframe[src*="adserver"],
+iframe[src*="popup"],
+div[id*="ad-"],
+div[class*="ad-"],
+div[id*="ads"],
+div[class*="ads"],
+div[id*="banner"],
+div[class*="banner"],
+.advertisement,
+.ad-container,
+.ads-container,
+.sponsored,
+.sponsor {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Block popup overlays */
+div[style*="z-index: 2147483647"],
+div[style*="position: fixed"][style*="top: 0"],
+div[style*="position: absolute"][style*="z-index: 999"] {
+  pointer-events: none !important;
+}
+
+/* Prevent click-jacking */
+body {
+  pointer-events: auto !important;
+}
+
+/* Hide adult content indicators */
+img[alt*="hot"],
+img[alt*="sexy"],
+img[src*="adult"],
+a[href*="dating"],
+a[href*="casino"],
+div[class*="adult"] {
+  display: none !important;
+}
