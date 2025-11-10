@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import SearchResults from "@/components/SearchResults";
 import { Search } from "lucide-react";
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [searchQuery, setSearchQuery] = useState(query);
@@ -27,5 +27,17 @@ export default function SearchPage() {
 
       {searchQuery && <SearchResults query={searchQuery} />}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
