@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Play, X } from "lucide-react";
+import Head from "next/head";
 
 interface VideoPlayerProps {
   contentId: string;
@@ -14,23 +15,37 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
   const [selectedSource, setSelectedSource] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Multiple streaming sources (cleaner, ad-reduced options)
+  // Multiple streaming sources (ordered by speed and reliability)
   const streamingSources = [
-    {
-      name: "VidSrc",
-      url: `https://vidsrc.xyz/embed/${contentType}/${contentId}`,
-    },
     {
       name: "VidSrc Pro",
       url: `https://vidsrc.pro/embed/${contentType}/${contentId}`,
+      priority: true,
     },
     {
       name: "VidSrc CC",
       url: `https://vidsrc.cc/v2/embed/${contentType}/${contentId}`,
+      priority: true,
+    },
+    {
+      name: "VidSrc",
+      url: `https://vidsrc.xyz/embed/${contentType}/${contentId}`,
+      priority: false,
     },
     {
       name: "AutoEmbed",
       url: `https://player.autoembed.cc/embed/${contentType}/${contentId}`,
+      priority: false,
+    },
+    {
+      name: "VidSrc NL",
+      url: `https://vidsrc.nl/embed/${contentType}/${contentId}`,
+      priority: true,
+    },
+    {
+      name: "2Embed",
+      url: `https://www.2embed.cc/embed/${contentId}`,
+      priority: false,
     },
   ];
 
@@ -54,6 +69,17 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
   }, [contentId, title, contentType, details]);
 
   return (
+    <>
+      {/* Preconnect to streaming sources for faster loading */}
+      <link rel="preconnect" href="https://vidsrc.pro" />
+      <link rel="preconnect" href="https://vidsrc.cc" />
+      <link rel="preconnect" href="https://vidsrc.nl" />
+      <link rel="preconnect" href="https://vidsrc.xyz" />
+      <link rel="preconnect" href="https://player.autoembed.cc" />
+      <link rel="dns-prefetch" href="https://vidsrc.pro" />
+      <link rel="dns-prefetch" href="https://vidsrc.cc" />
+      <link rel="dns-prefetch" href="https://vidsrc.nl" />
+      
     <div className="space-y-4">
       {/* Video Player */}
       <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
@@ -66,10 +92,12 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
           src={streamingSources[selectedSource].url}
           className="w-full h-full"
           allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          sandbox="allow-forms allow-scripts allow-same-origin allow-presentation"
-          referrerPolicy="no-referrer"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          sandbox="allow-forms allow-scripts allow-same-origin allow-presentation allow-popups"
+          referrerPolicy="origin"
+          loading="eager"
           onLoad={() => setIsLoading(false)}
+          style={{ border: 'none' }}
         />
       </div>
 
@@ -90,6 +118,7 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
             }`}
           >
             {source.name}
+            {source.priority && <span className="ml-1 text-xs">⚡</span>}
           </button>
         ))}
       </div>
@@ -97,8 +126,9 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
       {/* Info Banner */}
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
         <p className="text-sm text-gray-300">
-          <strong>Tip:</strong> If the video doesn't load, try switching to a different server above.
-          All streams are embedded from third-party sources. We recommend using an ad-blocker browser extension for the best experience.
+          <strong>⚡ Fast Streaming Tip:</strong> Servers marked with ⚡ are optimized for faster loading. 
+          If the video doesn't load or is slow, try switching to a different server above.
+          All streams are embedded from third-party sources.
         </p>
       </div>
       
@@ -110,5 +140,6 @@ export default function VideoPlayer({ contentId, contentType, title, details }: 
         </p>
       </div>
     </div>
+    </>
   );
 }

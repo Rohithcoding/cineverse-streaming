@@ -16,8 +16,21 @@ export default function ContentRow({ title, endpoint }: ContentRowProps) {
   useEffect(() => {
     fetch(endpoint)
       .then((res) => res.json())
-      .then((data) => setContent(data || []))
-      .catch((err) => console.error("Error fetching content:", err));
+      .then((data) => {
+        // Handle both array responses and object responses with results property
+        if (Array.isArray(data)) {
+          setContent(data);
+        } else if (data && Array.isArray(data.results)) {
+          setContent(data.results);
+        } else {
+          console.error("Invalid data format:", data);
+          setContent([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching content:", err);
+        setContent([]);
+      });
   }, [endpoint]);
 
   const scroll = (direction: "left" | "right") => {
